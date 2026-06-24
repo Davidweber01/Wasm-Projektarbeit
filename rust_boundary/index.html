@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rust WASM Boundary Bug PoC</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+            background: #f5f7fa;
+        }
+
+        .card {
+            max-width: 700px;
+            margin: auto;
+            padding: 1.5rem;
+            border-radius: 14px;
+            background: white;
+            box-shadow: 0 18px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        input,
+        textarea,
+        button {
+            width: 100%;
+            margin-top: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .row {
+            display: grid;
+            gap: 1rem;
+        }
+
+        label {
+            font-weight: 600;
+            margin-top: 1rem;
+            display: block;
+        }
+
+        button {
+            padding: 0.8rem 1rem;
+            background: #2563eb;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        pre {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Rust WASM Host Boundary Bug PoC</h1>
+        <p>This PoC demonstrates a browser-side bug where the host passes a pointer and a length to WASM and the module
+            trusts the length.</p>
+        <p>The backend is simulated in Rust/WASM. The request payload is stored in a fixed-size 16-byte buffer. If the
+            host report is too large, it can overflow the adjacent authentication flag and bypass access control.</p>
+
+        <label for="requestInput">Request payload</label>
+        <textarea id="requestInput" rows="4">admin:wrongpass</textarea>
+
+        <label for="lengthInput">Host-reported length</label>
+        <input id="lengthInput" type="number" value="18" />
+
+        <button id="runButton">Send request</button>
+        <button id="resetButton">Reset state</button>
+
+        <h2>Result</h2>
+        <pre id="result">Loading WASM module…</pre>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
