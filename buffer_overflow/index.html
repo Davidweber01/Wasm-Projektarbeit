@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser WASM Login Demo</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 8px;
+            max-width: 650px;
+        }
+
+        input,
+        button,
+        textarea {
+            width: 100%;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .row>* {
+            flex: 1 1 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Browser WASM Login Demo</h1>
+        <p>This demo simulates a real login page where the browser sends credentials to a backend.
+        </p>
+        <p>The server-side login logic verifies the username and password, then sets authentication state.
+            In this demo, the backend is simulated in WASM.</p>
+        <p>The submitted password is copied into a fixed-size 16-byte buffer. A too-long password can overflow into the
+            adjacent `isAdmin` flag and bypass authentication.</p>
+
+        <label for="usernameInput">Username:</label>
+        <input id="usernameInput" placeholder="admin" />
+
+        <label for="passwordInput">Password:</label>
+        <input id="passwordInput" type="password" placeholder="password" />
+
+        <button id="runButton">Login</button>
+        <button id="resetButton">Reset</button>
+
+        <h2>Server response</h2>
+        <div class="row">
+            <div>
+                <strong>Authentication result:</strong>
+                <pre id="secret">loading...</pre>
+            </div>
+        </div>
+
+        <p><strong>Expected behavior:</strong> correct credentials reveal the protected secret. An overly long password
+            can still overflow `isAdmin` and bypass the login check.</p>
+    </div>
+
+    <script src="wasm.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
