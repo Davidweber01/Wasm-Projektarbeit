@@ -34,6 +34,3 @@ docker build -t <beispiel> .
 docker run --rm -p 8080:8080 <beispiel>
 # Anwendung unter http://127.0.0.1:8080 erreichbar
 ```
-
-### `Papers/`
-Eine Auswahl der in der Arbeit zitierten wissenschaftlichen Veröffentlichungen (kein vollständiger Literaturüberblick).
