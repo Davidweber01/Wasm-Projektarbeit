@@ -1,0 +1,90 @@
+% ******************************************************************************
+% 
+% Formatvorlage für Projekt- und Bachelorarbeiten
+%
+% (c) Prof. Dr. Christoph Karg
+%     Hochschule Aalen
+%     E-Mail: christoph.karg@hs-aalen.de
+% ******************************************************************************
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{vorlage}
+  [2021/01/02 v0.0.2 LaTeX package fuer Projekt- und Bachelorarbeiten]
+
+\RequirePackage[a4paper,hmargin=25mm,tmargin=30mm,bmargin=30mm]{geometry}
+% \RequirePackage[utf8]{inputenc}
+\RequirePackage{fontspec}
+\RequirePackage{polyglossia}
+\setdefaultlanguage{german}
+\RequirePackage{graphicx}
+\RequirePackage{hyperref}
+\RequirePackage[backend=biber,
+    style=alphabetic
+%    style=numeric
+]{biblatex}
+
+\parindent0em
+\parskip 1ex plus 0.4ex minus 0.4ex
+
+\hypersetup{
+    colorlinks=true,
+}
+
+\newcommand{\studentname}{David Weber}
+\newcommand{\studentmatrikelnr}{3015004}
+\newcommand{\ausarbeitungtitel}{Sicherheitsaspekte von Webassembly}
+\newcommand{\ausarbeitungart}{Projektarbeit}
+\newcommand{\abgabedatum}{15.07.2026}
+\newcommand{\studiengang}{Informatik}
+\newcommand{\betreuereins}{Prof.~Dr.~Christoph Karg}
+\newcommand{\studentwohnort}{Göppingen}
+
+
+\newcommand{\deckblatt}{
+  \begin{center}
+    \vspace*{40mm}%
+    \textbf{\LARGE \ausarbeitungtitel}
+
+    \vspace*{5mm}%
+    {\large \ausarbeitungart}
+
+    \vspace*{20mm}%
+    {\Large \studentname}
+
+    \vspace{5mm}%
+    {\large \studentmatrikelnr}
+
+    \vspace{35mm}%
+    {\large \abgabedatum}%
+
+    \vspace{10mm}%
+    {\large Betreuer:} \\[2mm]%
+    {\large \betreuereins}
+
+    \vfill%
+    \includegraphics[scale=0.35]{Images/hs-aalen-logo.png}
+    
+    \vspace{3mm}%
+    Hochschule Aalen  \\%
+    Studiengang \studiengang
+  \end{center}
+}
+
+\newcommand{\eidesstattlicheerklaerung}{%
+  \cleardoublepage%
+  \pagestyle{empty}
+  \section*{Eidesstattliche Erkl\"arung}
+
+  Ich versichere, dass ich die Arbeit selbstst\"andig und ohne Benutzung
+  anderer als der angegebenen Hilfsmittel angefertigt habe. Alle Stellen, die
+  w\"ortlich oder sinngem\"a\ss\ aus Ver\"offentlichungen oder anderen Quellen
+  entnommen sind, sind als solche kenntlich gemacht. Die Abhandlung wurde
+  bisher in gleicher oder \"ahnlicher Form keiner anderen Pr\"ufungsbeh\"orde
+  vorgelegt und auch noch nicht ver\"offentlicht.
+
+  \vspace*{2ex}%
+  \studentwohnort, den \abgabedatum
+
+  \vspace*{6ex}%
+  (\studentname)
+}
+\endinput

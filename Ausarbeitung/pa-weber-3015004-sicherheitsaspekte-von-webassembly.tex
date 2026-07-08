@@ -1,0 +1,55 @@
+%\documentclass[12pt,twoside]{article}
+\documentclass[12pt]{article}
+
+\usepackage{vorlage}
+
+% Die Referenzen befinden sich in der Datei referenzen.bib
+\addbibresource{referenzen.bib}
+
+% *****************************************************************************
+% * Bitte anpassen!
+% *****************************************************************************
+
+\renewcommand{\studentname}{David Weber}
+\renewcommand{\studentmatrikelnr}{3015004}
+\renewcommand{\ausarbeitungtitel}{Sicherheitsaspekte von Webassembly}
+\renewcommand{\ausarbeitungart}{Projektarbeit}
+\renewcommand{\abgabedatum}{15.07.2026}
+\renewcommand{\studiengang}{Informatik}
+\renewcommand{\betreuereins}{Prof.~Dr.~Christoph Karg}
+
+\begin{document}
+
+\pagestyle{empty}
+\deckblatt%
+
+\cleardoublepage%
+\pagestyle{plain}
+\setcounter{page}{1}
+\pagenumbering{roman}
+\tableofcontents
+
+\cleardoublepage
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+
+% Die Ausarbeitung kann auf mehrere Dateien aufgeteilt werden, die 
+% mittels \input{} in das Hauptdokument eingelesen werden.
+
+\input{libsumdoc}
+
+% Ausgabe des Literaturverzeichnisses
+\cleardoublepage%
+\printbibliography
+
+% Eidesstattliche Erklärung (Bei Abgabe unterschreiben)
+\eidesstattlicheerklaerung%
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-engine: xetex
+%%% TeX-master: t
+%%% End:

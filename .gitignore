@@ -1,0 +1,20 @@
+# Rust build artifacts
+Projekt/rust_boundary/target/
+
+# LaTeX build artifacts
+Ausarbeitung/*.aux
+Ausarbeitung/*.bbl
+Ausarbeitung/*.bcf
+Ausarbeitung/*.blg
+Ausarbeitung/*.fdb_latexmk
+Ausarbeitung/*.fls
+Ausarbeitung/*.log
+Ausarbeitung/*.out
+Ausarbeitung/*.run.xml
+Ausarbeitung/*.synctex.gz
+Ausarbeitung/*.toc
+Ausarbeitung/*.pdf
+
+# Temporary files
+*.~
+*~
