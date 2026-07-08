@@ -14,6 +14,7 @@ Ausarbeitung/*.run.xml
 Ausarbeitung/*.synctex.gz
 Ausarbeitung/*.toc
 Ausarbeitung/*.pdf
+!Ausarbeitung/pa-weber-3015004-sicherheitsaspekte-von-webassembly.pdf
 
 # Temporary files
 *.~
