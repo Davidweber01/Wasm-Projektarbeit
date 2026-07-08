@@ -12,11 +12,29 @@
 
 \subsection{Motivation}
 
+Die Webplattform hat sich in den vergangenen Jahren von einem Medium zur Darstellung statischer Inhalte zu einer vollwertigen Anwendungsplattform entwickelt. Mit dieser Entwicklung steigen die Anforderungen an Ausführungsleistung und Portabilität von Webanwendungen erheblich. WebAssembly (Wasm) wurde als Antwort auf diese Anforderungen entwickelt und seit 2019 als W3C-Standard etabliert \cite{w3c2019wasmrec}. Die Technologie ermöglicht die Ausführung von kompiliertem Code aus Sprachen wie C, C++ oder Rust im Browser, mit einer Performance, die sich der nativer Anwendungen annähert.
+
+Der Einsatz von WebAssembly wächst rapide: Von interaktiven 3D-Anwendungen über Bildbearbeitungswerkzeuge bis hin zu serverseitigen Container-Laufzeitumgebungen findet die Technologie zunehmend Verbreitung in produktiven Systemen \cite{PERRONE2025100728}. Diese Ausbreitung macht WebAssembly zu einem sicherheitsrelevanten Bestandteil moderner Software-Infrastrukturen.
+
+WebAssembly wurde mit explizitem Fokus auf Sicherheit entworfen: Das Sandbox-Modell, das typsichere Ausführungsmodell und die statische Validierung sind als inhärente Sicherheitsmechanismen konzipiert \cite{wasmcoreW3C}. Gleichzeitig bringt die Technologie charakteristische Eigenschaften mit sich, die aus Sicherheitsperspektive kritisch zu betrachten sind. Da ein Großteil der eingesetzten Wasm-Module durch Kompilierung von C- oder C++-Code entsteht, werden klassische Speicherfehler dieser Sprachen in den WebAssembly-Kontext übertragen. Die Frage, welche Schutzwirkung die Wasm-Sandbox in diesen Fällen tatsächlich bietet und wo ihre Grenzen liegen, ist für Entwickler und Sicherheitsforscher gleichermaßen relevant.
+
 \subsection{Problemstellung}
+
+Trotz der sicherheitsorientierten Designziele von WebAssembly zeigt die Forschung, dass die Technologie nicht frei von Schwachstellen ist. Lehmann et al.~\cite{255318} demonstrieren, dass klassische Angriffstechniken der Binärsicherheit --- darunter Buffer~Overflows, Use-after-Free und Integer~Overflows --- im Wasm-Kontext weiterhin wirksam sind, auch wenn sich ihre Auswirkungen durch das Sandbox-Modell grundlegend verändern. Stiévenart et al.~\cite{stiévenart2021securityrisklackingcompiler} zeigen darüber hinaus, dass gängige Compiler-Toolchains wie Emscripten etablierte Schutzmechanismen wie Stack Canaries oder ASLR standardmäßig nicht aktivieren.
+
+Auf der anderen Seite entstehen durch den Einsatz von WebAssembly neue Angriffsvektoren, die in rein JavaScript-basierten Anwendungen nicht in dieser Form auftreten: Die asymmetrische Vertrauensgrenze zwischen JavaScript-Host und Wasm-Modul eröffnet Angriffspfade, bei denen Speicherfehler im Modul über die Sandbox-Grenze hinaus zu JavaScript-Codeausführung führen können \cite{10.1145/3728937}. Zudem verstärkt WebAssembly durch seine Ausführungscharakteristik das Potenzial für mikroarchitektonische Side-Channel-Angriffe wie Spectre \cite{PERRONE2025100728}.
+
+Es besteht damit eine Spannung zwischen dem Sicherheitsversprechen von WebAssembly und den in der Praxis beobachteten Schwachstellen. Eine fundierte Analyse, die beide Seiten --- Schutzwirkung und verbleibende Angriffsfläche --- systematisch untersucht und durch praktische Demonstrationen belegt, stellt eine relevante Grundlage für den sicheren Einsatz der Technologie dar.
 
 \subsection{Zielsetzung}
 
+Ziel dieser Arbeit ist eine systematische Untersuchung der Sicherheitsaspekte von WebAssembly, die sowohl die eingebauten Defensivmechanismen als auch die verbleibenden und neu entstehenden Schwachstellenklassen analysiert. Die Untersuchung kombiniert eine theoretische Bedrohungsanalyse mit einer empirischen Komponente: Fünf selbst entwickelte Proof-of-Concept-Implementierungen demonstrieren konkrete Schwachstellen im Browser-Kontext und machen deren Auswirkungen unmittelbar nachvollziehbar.
+
+Die Arbeit richtet sich an Entwickler, die WebAssembly in sicherheitskritischen Anwendungen einsetzen, sowie an Sicherheitsforschende, die das Bedrohungsmodell der Technologie einordnen möchten. Sie verfolgt keinen Anspruch auf Vollständigkeit aller bekannten Wasm-Schwachstellen, sondern auf eine fundierte, exemplarische Analyse ausgewählter, praxisrelevanter Schwachstellenklassen.
+
 \subsection{Forschungsfragen}
+
+Aus der Problemstellung und Zielsetzung ergeben sich die folgenden fünf Forschungsfragen, die im Verlauf der Arbeit beantwortet werden:
 
 \begin{enumerate}
   \item Welche Sicherheitsmechanismen implementiert WebAssembly standardmäßig?
@@ -27,6 +45,8 @@
 \end{enumerate}
 
 \subsection{Aufbau der Arbeit}
+
+Die Arbeit gliedert sich in sieben Kapitel. Kapitel~2 legt das theoretische und technische Fundament: Es beschreibt die Entstehung und Standardisierung von WebAssembly, dessen interne Architektur sowie die relevanten Sicherheitskonzepte der Webplattform. Kapitel~3 erläutert die methodische Vorgehensweise, insbesondere die Literaturrecherche und die Entwicklung der Proof-of-Concept-Implementierungen. In Kapitel~4 wird eine Bedrohungsanalyse durchgeführt: Es werden Angreiferprofile und Angriffsoberflächen definiert, die Defensivmechanismen von WebAssembly bewertet und neue Angriffsvektoren identifiziert. Kapitel~5 präsentiert die fünf praktischen Untersuchungen --- Buffer~Overflow, Use-after-Free, Integer~Overflow, JS-Wasm-Grenzvertrauen sowie AddressSanitizer als Gegenmaßnahme --- und dokumentiert deren Implementierung, Durchführung und Ergebnisse. Kapitel~6 diskutiert die Ergebnisse, beantwortet die Forschungsfragen explizit und leitet Empfehlungen für Entwickler ab. Kapitel~7 fasst die Erkenntnisse der Arbeit zusammen und skizziert weiterführende Forschungsansätze.
 
 \clearpage
 
