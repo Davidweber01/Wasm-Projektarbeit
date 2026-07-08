@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser WASM Use-After-Free Demo</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 8px;
+            max-width: 700px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 0.4rem;
+        }
+
+        .row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .row>* {
+            flex: 1 1 200px;
+        }
+
+        #log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            min-height: 180px;
+            max-height: 280px;
+            overflow-y: auto;
+            margin-top: 0.75rem;
+            white-space: pre-wrap;
+        }
+
+        .log-line.ok {
+            color: #6a9955;
+        }
+
+        .log-line.warn {
+            color: #ce9178;
+        }
+
+        .log-line.bad {
+            color: #f44747;
+            font-weight: bold;
+        }
+
+        .log-line.info {
+            color: #9cdcfe;
+        }
+
+        #status {
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        h3 {
+            margin: 1.2rem 0 0.3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Browser WASM Use-After-Free Demo</h1>
+        <p>
+            This demo simulates a session-management backend implemented in WASM (C).
+            After a session is freed, the pointer is <strong>not cleared</strong>.
+            Because WASM's linear memory is never returned to the OS, the bytes remain
+            readable. A new same-size allocation typically reuses the freed block,
+            letting attacker-controlled data be read through the stale pointer.
+        </p>
+
+        <h3>Step 1 — Create a session</h3>
+        <input id="usernameInput" placeholder="Username (e.g. alice)" />
+        <button id="btnCreate">Create Session</button>
+
+        <h3>Step 2 — Free the session (introduces dangling pointer)</h3>
+        <button id="btnFree">Logout / Free Session</button>
+
+        <h3>Step 3 — Trigger reuse of freed memory</h3>
+        <input id="hijackInput" placeholder="Attacker data (e.g. HIJACKED_DATA)" />
+        <button id="btnHijack">New Allocation with Attacker Data</button>
+
+        <h3>Controls</h3>
+        <button id="btnReset">Reset</button>
+
+        <div id="log"></div>
+        <p id="status">Loading WASM…</p>
+
+        <h3>Expected attack flow</h3>
+        <ol>
+            <li>Create a session → token is <code>SECRET_TOKEN_42</code></li>
+            <li>Free the session → dangling pointer kept, token still readable (stale bytes)</li>
+            <li>New allocation with attacker data → allocator reuses the freed block</li>
+            <li>Read token via dangling pointer → returns attacker-controlled data</li>
+        </ol>
+    </div>
+
+    <script src="wasm.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

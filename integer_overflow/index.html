@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser WASM Integer Overflow Demo</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 8px;
+            max-width: 700px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 0.4rem;
+        }
+
+        #log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: monospace;
+            font-size: 0.85rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            min-height: 160px;
+            max-height: 260px;
+            overflow-y: auto;
+            margin-top: 0.75rem;
+            white-space: pre-wrap;
+        }
+
+        .log-line.ok {
+            color: #6a9955;
+        }
+
+        .log-line.bad {
+            color: #f44747;
+            font-weight: bold;
+        }
+
+        .log-line.info {
+            color: #9cdcfe;
+        }
+
+        #status {
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+
+        h3 {
+            margin: 1.2rem 0 0.3rem;
+        }
+
+        code {
+            background: #eee;
+            padding: 0 3px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>Browser WASM Integer Overflow Demo</h1>
+        <p>
+            This demo simulates a data-submission backend implemented in WASM (C).
+            The backend allocates a fixed 32-byte buffer and validates incoming items
+            with the check <code>uint8_t total = item_count × 8</code>.
+            When <code>item_count = 32</code> the product is 256, which wraps to
+            <strong>0</strong> in <code>uint8_t</code>. The bounds check passes,
+            but <code>memcpy</code> uses the actual size (256 bytes), overflowing
+            the buffer into the adjacent <code>is_admin</code> flag.
+        </p>
+
+        <h3>Item count (uint8_t, 0–255)</h3>
+        <p>
+            Try <strong>3</strong> for normal behavior, or <strong>32</strong> to
+            trigger the overflow.
+        </p>
+        <input id="countInput" type="number" min="0" max="255" placeholder="e.g. 3 (safe) or 32 (overflow)" />
+        <button id="btnSubmit">Submit Items</button>
+        <button id="btnReset">Reset</button>
+
+        <div id="log"></div>
+        <p id="status">Loading WASM…</p>
+
+        <h3>Expected behavior</h3>
+        <ul>
+            <li><strong>item_count = 3</strong>: total = 24, check 24 &gt; 32 → reject? No — passes, safe write of 24
+                bytes.</li>
+            <li><strong>item_count = 5</strong>: total = 40, check 40 &gt; 32 → rejected correctly.</li>
+            <li><strong>item_count = 32</strong>: total wraps to 0, check 0 &gt; 32 → passes, 256 bytes written →
+                <code>is_admin</code> overwritten → access granted.</li>
+        </ul>
+    </div>
+
+    <script src="wasm.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

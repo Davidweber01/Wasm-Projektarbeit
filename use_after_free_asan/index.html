@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser WASM UAF — AddressSanitizer Build</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 2rem;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            border-radius: 8px;
+            max-width: 740px;
+        }
+
+        input,
+        button {
+            width: 100%;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 0.4rem;
+        }
+
+        .banner {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
+            margin-bottom: 1rem;
+        }
+
+        #log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            font-family: monospace;
+            font-size: 0.82rem;
+            padding: 0.75rem;
+            border-radius: 4px;
+            min-height: 200px;
+            max-height: 320px;
+            overflow-y: auto;
+            margin-top: 0.75rem;
+            white-space: pre-wrap;
+        }
+
+        .log-line.ok {
+            color: #6a9955;
+        }
+
+        .log-line.warn {
+            color: #ce9178;
+        }
+
+        .log-line.asan {
+            color: #9cdcfe;
+        }
+
+        .log-line.asan-error {
+            color: #f44747;
+            font-weight: bold;
+        }
+
+        #status {
+            font-weight: bold;
+            margin-top: 0.5rem;
+            min-height: 1.4em;
+        }
+
+        h3 {
+            margin: 1.2rem 0 0.3rem;
+        }
+
+        code {
+            background: #eee;
+            padding: 0 3px;
+            border-radius: 3px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        td,
+        th {
+            border: 1px solid #ccc;
+            padding: 0.4rem 0.6rem;
+            text-align: left;
+        }
+
+        th {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>WASM Use-After-Free — AddressSanitizer Build</h1>
+
+        <div class="banner">
+            <strong>Countermeasure demo.</strong>
+            This page uses the <em>identical</em> <code>vuln.c</code> as the unprotected build.
+            The only difference is the compiler flag <code>-fsanitize=address</code>.
+            ASan instruments every heap operation at compile time and aborts execution
+            the moment a freed memory region is accessed.
+        </div>
+
+        <table>
+            <tr>
+                <th></th>
+                <th>Unprotected build (<code>use_after_free/</code>)</th>
+                <th>This build (ASan)</th>
+            </tr>
+            <tr>
+                <td>Source code</td>
+                <td>vuln.c</td>
+                <td>identical vuln.c</td>
+            </tr>
+            <tr>
+                <td>Compiler flag</td>
+                <td><code>-O2</code></td>
+                <td><code>-fsanitize=address -O1</code></td>
+            </tr>
+            <tr>
+                <td>UAF attempt</td>
+                <td>Succeeds — returns attacker data</td>
+                <td>Aborted — ASan report in console</td>
+            </tr>
+        </table>
+
+        <h3>Step 1 — Create a session</h3>
+        <input id="usernameInput" placeholder="Username (e.g. alice)" />
+        <button id="btnCreate">Create Session</button>
+
+        <h3>Step 2 — Free the session, then attempt UAF read</h3>
+        <p>ASan will intercept the read inside <code>read_token()</code> and halt the module.</p>
+        <button id="btnFree">Logout / Free Session (triggers UAF read)</button>
+
+        <h3>Controls</h3>
+        <button id="btnReset">Reset (reloads WASM module)</button>
+
+        <div id="log"></div>
+        <p id="status">Loading WASM (ASan build)…</p>
+
+        <h3>What to observe</h3>
+        <ol>
+            <li>After <em>Create Session</em> a normal token read succeeds — ASan is silent.</li>
+            <li>After <em>Logout / Free Session</em> the UAF read is attempted.</li>
+            <li>ASan detects access to freed memory, writes a <code>heap-use-after-free</code>
+                report to stderr (shown in the log above), and calls <code>abort()</code>.</li>
+            <li>The token is <strong>never returned</strong> — the module halts before the
+                attacker-controlled data can be read.</li>
+        </ol>
+    </div>
+
+    <script src="wasm.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
